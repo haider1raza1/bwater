@@ -110,3 +110,4 @@ jobs:
           overwrite: true
         # Create the file with the current SHA
         run: echo "${{ steps.get-delta.outputs.CURRENT_SHA }}" > commit_SHA.txt
+
