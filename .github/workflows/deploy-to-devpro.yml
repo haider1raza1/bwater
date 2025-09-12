@@ -4,49 +4,45 @@ on:
     branches: [ develop ]
 
 env:
-  SF_USERNAME: ${{ secrets.DEVPRO_USERNAME }} # JWT auth username for DevPro sandbox
-  CONSUMER_KEY: ${{ secrets.DEVPRO_CONSUMER_KEY }} # Connected App Consumer Key
-  SERVER_KEY: ${{ secrets.DEVPRO_SERVER_KEY }} # Base64-Encoded Private Key
+  SF_USERNAME: ${{ secrets.DEVPRO_USERNAME }}
+  CONSUMER_KEY: ${{ secrets.DEVPRO_CONSUMER_KEY }}
+  SERVER_KEY: ${{ secrets.DEVPRO_SERVER_KEY }}
 
 jobs:
   deploy-delta:
     name: Calculate Delta and Deploy
     runs-on: ubuntu-latest
     steps:
-      # Step 1: Checkout the code. Fetch all history for delta comparison.
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Fetches all history, essential for git diff
+          fetch-depth: 0
 
-      # Step 2: Setup Salesforce CLI
       - name: Setup Salesforce CLI
         run: |
           npm install -g @salesforce/cli
 
-      # Step 3: JWT Authenticate to the DevPro Sandbox
       - name: Auth to DevPro Sandbox
         run: |
           echo "$SERVER_KEY" | base64 -di > server.key
           sf org login jwt --username $SF_USERNAME --client-id $CONSUMER_KEY --jwt-key-file server.key --alias devpro
 
-      # Step 4: Download the artifact containing the LAST_DEPLOYED_COMMIT
       - name: Download Last Deployed Commit
         uses: actions/download-artifact@v4
         with:
           name: last-deployed-commit
-          path: ./artifacts
-        continue-on-error: true # This will succeed even if the artifact doesn't exist (e.g., first run)
+          path: ./
+        continue-on-error: true # Allows the first run to succeed
 
-      # Step 5: Determine Delta
-      - name: Get Changed Files
+      - name: Get Changed Files and Tests
         id: get-delta
         run: |
-          # Read the last deployed commit SHA from the artifact file. If it doesn't exist, default to 'HEAD~1' (previous commit).
-          if [ -f ./artifacts/commit_SHA.txt ]; then
-            LAST_SHA=$(cat ./artifacts/commit_SHA.txt)
+          # Read the last deployed commit SHA
+          if [ -f ./commit_SHA.txt ]; then
+            LAST_SHA=$(cat ./commit_SHA.txt)
             echo "Last deployed SHA: $LAST_SHA"
           else
+            # If no artifact exists (first run), compare against the last commit
             LAST_SHA=$(git rev-parse HEAD~1)
             echo "No previous artifact found. Using previous commit: $LAST_SHA"
           fi
@@ -54,58 +50,50 @@ jobs:
           CURRENT_SHA=$(git rev-parse HEAD)
           echo "Current SHA: $CURRENT_SHA"
 
-          # Get the list of changed metadata files (assuming they are in the 'force-app' directory)
-          # Filter for common Salesforce source file extensions
+          # Save the current SHA for the artifact upload step
+          echo "CURRENT_SHA=$CURRENT_SHA" >> $GITHUB_ENV
+
+          # Get list of changed files in the force-app directory
           git diff --name-only $LAST_SHA $CURRENT_SHA -- force-app > changed_files.txt
-          
-          # (Optional) Map changed files to test classes. This is a simple example.
-          # If a file named 'MyClass.cls' is changed, add 'MyClassTest' to a list.
+
+          # Create a list of corresponding test classes
+          touch test_classes.txt
           if [ -s changed_files.txt ]; then
+            echo "Changed files:"
+            cat changed_files.txt
+            # Simple mapping: MyClass.cls -> MyClassTest
             grep '\.cls$' changed_files.txt | sed 's/\.cls$//; s/.*\///' | while read line; do echo "${line}Test"; done | sort -u > test_classes.txt
             echo "Tests to run:"
             cat test_classes.txt
           else
-            echo "No relevant files changed."
-            touch test_classes.txt
+            echo "No metadata files changed in force-app."
           fi
 
-          # Store the SHA and file lists for use in later steps
-          echo "CURRENT_SHA=$CURRENT_SHA" >> $GITHUB_OUTPUT
-          echo "test_classes=$(cat test_classes.txt | tr '\n' ',' | sed 's/,$//')" >> $GITHUB_OUTPUT
-
-      # Step 6: Deploy the Delta
       - name: Deploy Delta to Org
         run: |
-          # Check if there are any changed files in our package directory
           if [ -s changed_files.txt ]; then
             echo "Deploying changed files..."
-            # Use the git diff output to create a package.xml and deploy
-            # Alternatively, use the --source-dir flag with the list of files (CLI v7.120.0+)
-            sf project deploy start --source-dir=$(cat changed_files.txt | tr '\n' ',') --target-org devpro --wait 15
+            # Deploy the specific files that changed
+            sf project deploy start --source-dir=$(paste -s -d, changed_files.txt) --target-org devpro --wait 15
           else
-            echo "No files to deploy. Skipping."
+            echo "Skipping deployment: No files to deploy."
           fi
 
-      # Step 7: Run Targeted Tests
       - name: Run Selected Tests
         run: |
-          # Check if we have any test classes to run
           if [ -s test_classes.txt ]; then
-            TESTS_TO_RUN=$(cat test_classes.txt | tr '\n' ' ')
+            TESTS_TO_RUN=$(paste -s -d" " test_classes.txt)
             echo "Running tests: $TESTS_TO_RUN"
             sf apex run test --test-names "$TESTS_TO_RUN" --target-org devpro --wait 15 --code-coverage
           else
-            echo "No specific tests to run. Running no tests."
-            # Alternatively, you could run a minimal subset here if required by platform
-            # sf apex run test --tests "SmokeTestClass" --target-org devpro --wait 5
+            echo "No tests specified for execution. Skipping tests."
           fi
 
-      # Step 8: Upload the CURRENT commit SHA as the new artifact for the next run
+      # FIXED STEP: The 'run' command is now at the correct level
       - name: Upload Artifact for Next Deployment
         uses: actions/upload-artifact@v4
         with:
           name: last-deployed-commit
           path: commit_SHA.txt
           overwrite: true
-        # The 'run' key must be at the same level as 'uses' and 'with'
-        run: echo "${{ steps.get-delta.outputs.CURRENT_SHA }}" > commit_SHA.txt
+        run: echo "${{ env.CURRENT_SHA }}" > commit_SHA.txt
