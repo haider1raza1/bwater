@@ -1,67 +1,20 @@
-name: Deploy Delta to DevPro Sandbox
-on:
-  push:
-    branches: [ develop ]
-
-env:
-  SF_USERNAME: ${{ secrets.DEVPRO_USERNAME }}
-  CONSUMER_KEY: ${{ secrets.DEVPRO_CONSUMER_KEY }}
-  SERVER_KEY: ${{ secrets.DEVPRO_SERVER_KEY }}
-
-jobs:
-  deploy-delta:
-    name: Calculate Delta and Deploy
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup Salesforce CLI
-        run: |
-          npm install -g @salesforce/cli
-
-      - name: Auth to DevPro Sandbox
-        run: |
-          echo "$SERVER_KEY" | base64 -di > server.key
-          sf org login jwt --username $SF_USERNAME --client-id $CONSUMER_KEY --jwt-key-file server.key --alias devpro
-
-      - name: Download Last Deployed Commit
-        uses: actions/download-artifact@v4
-        with:
-          name: last-deployed-commit
-          path: ./
-        continue-on-error: true # Allows the first run to succeed
-
       - name: Get Changed Files and Tests
         id: get-delta
         run: |
-          # Read the last deployed commit SHA
           if [ -f ./commit_SHA.txt ]; then
             LAST_SHA=$(cat ./commit_SHA.txt)
             echo "Last deployed SHA: $LAST_SHA"
           else
-            # If no artifact exists (first run), compare against the last commit
             LAST_SHA=$(git rev-parse HEAD~1)
             echo "No previous artifact found. Using previous commit: $LAST_SHA"
           fi
-
           CURRENT_SHA=$(git rev-parse HEAD)
-          echo "Current SHA: $CURRENT_SHA"
-
-          # Save the current SHA for the artifact upload step
           echo "CURRENT_SHA=$CURRENT_SHA" >> $GITHUB_ENV
-
-          # Get list of changed files in the force-app directory
           git diff --name-only $LAST_SHA $CURRENT_SHA -- force-app > changed_files.txt
-
-          # Create a list of corresponding test classes
           touch test_classes.txt
           if [ -s changed_files.txt ]; then
             echo "Changed files:"
             cat changed_files.txt
-            # Simple mapping: MyClass.cls -> MyClassTest
             grep '\.cls$' changed_files.txt | sed 's/\.cls$//; s/.*\///' | while read line; do echo "${line}Test"; done | sort -u > test_classes.txt
             echo "Tests to run:"
             cat test_classes.txt
@@ -73,7 +26,6 @@ jobs:
         run: |
           if [ -s changed_files.txt ]; then
             echo "Deploying changed files..."
-            # Deploy the specific files that changed
             sf project deploy start --source-dir=$(paste -s -d, changed_files.txt) --target-org devpro --wait 15
           else
             echo "Skipping deployment: No files to deploy."
@@ -89,11 +41,13 @@ jobs:
             echo "No tests specified for execution. Skipping tests."
           fi
 
-      # FIXED STEP: The 'run' command is now at the correct level
+      # FIXED: Split into two separate steps
+      - name: Create State File
+        run: echo "${{ env.CURRENT_SHA }}" > commit_SHA.txt
+
       - name: Upload Artifact for Next Deployment
         uses: actions/upload-artifact@v4
         with:
           name: last-deployed-commit
           path: commit_SHA.txt
           overwrite: true
-        run: echo "${{ env.CURRENT_SHA }}" > commit_SHA.txt
