@@ -105,8 +105,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: last-deployed-commit
-          path: |
-            commit_SHA.txt
+          path: commit_SHA.txt
           overwrite: true
-        # Create the file with the current SHA
+        # The 'run' key must be at the same level as 'uses' and 'with'
         run: echo "${{ steps.get-delta.outputs.CURRENT_SHA }}" > commit_SHA.txt
