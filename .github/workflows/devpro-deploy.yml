@@ -38,6 +38,7 @@ jobs:
         run: |
           sf project deploy start \
             --target-org devpro-sandbox \
+            --ignore-conflicts \
             --wait 60 \
             --verbose
 
