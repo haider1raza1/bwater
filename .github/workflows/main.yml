@@ -1,0 +1,62 @@
+name: Deploy to DevPro Sandbox
+
+on:
+  push:
+    branches: [ devpro ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Setup Salesforce CLI
+      run: |
+        npm install -g @salesforce/cli
+        sf --version
+        
+    - name: Create JWT key file
+      run: |
+        # Create the private key file from base64 secret
+        echo "${{ secrets.DEVPRO_JWT_KEY }}" | base64 -d > server.key
+        chmod 600 server.key
+        
+        # Verify the key is valid
+        openssl rsa -in server.key -check -noout && echo "✓ Valid RSA key" || echo "✗ Invalid RSA key"
+        
+    - name: Authenticate with JWT
+      run: |
+        sf org login jwt \
+          --username ${{ secrets.DEVPRO_USERNAME }} \
+          --client-id ${{ secrets.DEVPRO_CONSUMER_KEY }} \
+          --jwt-key-file server.key \
+          --instance-url ${{ secrets.DEVPRO_AUTH_URL }} \
+          --alias devpro-sandbox \
+          --set-default \
+          --json
+          
+    - name: Verify authentication
+      run: |
+        echo "Connected orgs:"
+        sf org list
+        
+    - name: Deploy to DevPro Sandbox
+      run: |
+        sf project deploy start \
+          --target-org devpro-sandbox \
+          --wait 60 \
+          --verbose
+          
+    - name: Run tests
+      run: |
+        sf apex run test \
+          --target-org devpro-sandbox \
+          --wait 30 \
+          --result-format human
+          
+    - name: Clean up
+      run: |
+        rm -f server.key
+      if: always()
