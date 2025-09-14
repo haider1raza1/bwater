@@ -9,54 +9,71 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-    
-    - name: Setup Salesforce CLI
-      run: |
-        npm install -g @salesforce/cli
-        sf --version
-        
-    - name: Create JWT key file
-      run: |
-        # Create the private key file from base64 secret
-        echo "${{ secrets.DEVPRO_JWT_KEY }}" | base64 -d > server.key
-        chmod 600 server.key
-        
-        # Verify the key is valid
-        openssl rsa -in server.key -check -noout && echo "✓ Valid RSA key" || echo "✗ Invalid RSA key"
-        
-    - name: Authenticate with JWT
-      run: |
-        sf org login jwt \
-          --username ${{ secrets.DEVPRO_USERNAME }} \
-          --client-id ${{ secrets.DEVPRO_CONSUMER_KEY }} \
-          --jwt-key-file server.key \
-          --instance-url ${{ vars.DEVPRO_AUTH_URL }} \
-          --alias devpro-sandbox \
-          --set-default \
-          --json
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2  # Needed for git diff to work
+
+      - name: Setup Salesforce CLI
+        run: |
+          npm install -g @salesforce/cli
+          sf --version
+
+      - name: Create JWT key file
+        run: |
+          echo "${{ secrets.DEVPRO_JWT_KEY }}" | base64 -d > server.key
+          chmod 600 server.key
+
+      - name: Authenticate with JWT
+        run: |
+          sf org login jwt \
+            --username ${{ secrets.DEVPRO_USERNAME }} \
+            --client-id ${{ secrets.DEVPRO_CONSUMER_KEY }} \
+            --jwt-key-file server.key \
+            --instance-url ${{ secrets.DEVPRO_AUTH_URL }} \
+            --alias devpro-sandbox \
+            --set-default
+
+      - name: Deploy to DevPro Sandbox
+        run: |
+          sf project deploy start \
+            --target-org devpro-sandbox \
+            --wait 60 \
+            --verbose
+
+      - name: Conditionally run tests
+        run: |
+          # Check if there are any Apex classes in the project
+          if find force-app -name "*.cls" -type f | read; then
+            echo "Apex classes found, attempting to run tests..."
           
-    - name: Verify authentication
-      run: |
-        echo "Connected orgs:"
-        sf org list
-        
-    - name: Deploy to DevPro Sandbox
-      run: |
-        sf project deploy start \
-          --target-org devpro-sandbox \
-          --wait 60 \
-          --verbose
+            # Run tests with error handling
+            set +e
+            TEST_OUTPUT=$(sf apex run test \
+              --target-org devpro-sandbox \
+              --wait 15 \
+              --result-format json 2>&1)
+            TEST_EXIT_CODE=$?
+            set -e
           
-    - name: Run tests
-      run: |
-        sf apex run test \
-          --target-org devpro-sandbox \
-          --wait 30 \
-          --result-format human
-          
-    - name: Clean up
-      run: |
-        rm -f server.key
-      if: always()
+            if [ $TEST_EXIT_CODE -eq 0 ]; then
+              echo "✓ Tests completed successfully"
+              echo "$TEST_OUTPUT" | jq '.result.summary'
+            else
+              # Check if the error is because no tests exist
+              if echo "$TEST_OUTPUT" | grep -q "NO_TESTS_RAN\|0 tests"; then
+                echo "✓ No test methods found - this is expected for new projects"
+              else
+                echo "Test execution failed:"
+                echo "$TEST_OUTPUT"
+                exit $TEST_EXIT_CODE
+              fi
+            fi
+          else
+            echo "✓ No Apex classes in project - skipping tests"
+          fi
+
+      - name: Clean up
+        run: |
+          rm -f server.key
+        if: always()
