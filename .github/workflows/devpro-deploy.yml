@@ -32,7 +32,7 @@ jobs:
           --username ${{ secrets.DEVPRO_USERNAME }} \
           --client-id ${{ secrets.DEVPRO_CONSUMER_KEY }} \
           --jwt-key-file server.key \
-          --instance-url ${{ secrets.DEVPRO_AUTH_URL }} \
+          --instance-url ${{ vars.DEVPRO_AUTH_URL }} \
           --alias devpro-sandbox \
           --set-default \
           --json
