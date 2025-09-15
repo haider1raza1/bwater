@@ -1,0 +1,93 @@
+name: Deploy Delta to STAGING Sandbox
+
+on:
+  push:
+    branches: [ staging ]
+
+env:
+  SF_USERNAME: ${{ secrets.STAGING_USERNAME }}
+  CONSUMER_KEY: ${{ secrets.STAGING_CONSUMER_KEY }}
+  SERVER_KEY: ${{ secrets.STAGING_SERVER_KEY }}
+
+jobs:
+  deploy-delta:
+    name: Calculate Delta and Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Salesforce CLI
+        run: |
+          npm install -g @salesforce/cli
+
+      - name: Auth to STAGING Sandbox
+        run: |
+          echo "$SERVER_KEY" | base64 -di > server.key
+          sf org login jwt --username $SF_USERNAME --client-id $CONSUMER_KEY --jwt-key-file server.key --alias staging
+
+      - name: Download Last Deployed Commit
+        uses: actions/download-artifact@v4
+        with:
+          name: last-deployed-commit
+          path: ./
+        continue-on-error: true
+
+      - name: Get Changed Files and Tests
+        id: get-delta
+        run: |
+          if [ -f ./commit_SHA.txt ]; then
+            LAST_SHA=$(cat ./commit_SHA.txt)
+            echo "Last deployed SHA: $LAST_SHA"
+          else
+            LAST_SHA=$(git rev-parse HEAD~1)
+            echo "No previous artifact found. Using previous commit: $LAST_SHA"
+          fi
+
+          CURRENT_SHA=$(git rev-parse HEAD)
+          echo "CURRENT_SHA=$CURRENT_SHA" >> $GITHUB_ENV
+          echo "Current SHA: $CURRENT_SHA"
+
+          git diff --name-only $LAST_SHA $CURRENT_SHA -- force-app > changed_files.txt
+
+          touch test_classes.txt
+          if [ -s changed_files.txt ]; then
+            echo "Changed files:"
+            cat changed_files.txt
+            grep '\.cls$' changed_files.txt | sed 's/\.cls$//; s/.*\///' | while read line; do echo "${line}Test"; done | sort -u > test_classes.txt
+            echo "Tests to run:"
+            cat test_classes.txt
+          else
+            echo "No metadata files changed in force-app."
+          fi
+
+      - name: Deploy Delta to Org
+        run: |
+          if [ -s changed_files.txt ]; then
+            echo "Deploying changed files..."
+            sf project deploy start --source-dir=$(paste -s -d, changed_files.txt) --target-org staging --wait 15
+          else
+            echo "Skipping deployment: No files to deploy."
+          fi
+
+      - name: Run Selected Tests
+        run: |
+          if [ -s test_classes.txt ]; then
+            TESTS_TO_RUN=$(paste -s -d" " test_classes.txt)
+            echo "Running tests: $TESTS_TO_RUN"
+            sf apex run test --test-names "$TESTS_TO_RUN" --target-org staging --wait 15 --code-coverage
+          else
+            echo "No tests specified for execution. Skipping tests."
+          fi
+
+      - name: Create State File
+        run: echo "${{ env.CURRENT_SHA }}" > commit_SHA.txt
+
+      - name: Upload Artifact for Next Deployment
+        uses: actions/upload-artifact@v4
+        with:
+          name: last-deployed-commit
+          path: commit_SHA.txt
+          overwrite: true
