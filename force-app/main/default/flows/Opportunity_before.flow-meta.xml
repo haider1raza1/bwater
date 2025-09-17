@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>64.0</apiVersion>
+    <environments>Default</environments>
+    <formulas>
+        <name>EvaluateAmount</name>
+        <dataType>Currency</dataType>
+        <expression>IF( NOT(ISBLANK({!$Record.Est_Revenue__c})), {!$Record.Est_Revenue__c}, {!$Record.Amount})</expression>
+        <scale>2</scale>
+    </formulas>
+    <formulas>
+        <name>EvaluateCloseDate</name>
+        <dataType>Date</dataType>
+        <expression>IF( NOT(ISBLANK({!$Record.Est_Start_Date__c})), {!$Record.Est_Start_Date__c}, {!$Record.CloseDate})</expression>
+    </formulas>
+    <interviewLabel>Opportunity before {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Opportunity before</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <name>Set_close_date_and_amount</name>
+        <label>Set close date and amount</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <inputAssignments>
+            <field>Amount</field>
+            <value>
+                <elementReference>EvaluateAmount</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>CloseDate</field>
+            <value>
+                <elementReference>EvaluateCloseDate</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Set_close_date_and_amount</targetReference>
+        </connector>
+        <object>Opportunity</object>
+        <recordTriggerType>Create</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>
