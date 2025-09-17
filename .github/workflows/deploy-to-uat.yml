@@ -1,13 +1,13 @@
-name: Deploy Delta to DevPro Sandbox
+name: Deploy Delta to UAT Sandbox
 
 on:
   push:
-    branches: [ develop ]
+    branches: [ uat ]
 
 env:
-  SF_USERNAME: ${{ secrets.DEVPRO_USERNAME }}
-  CONSUMER_KEY: ${{ secrets.DEVPRO_CONSUMER_KEY }}
-  SERVER_KEY: ${{ secrets.DEVPRO_SERVER_KEY }}
+  SF_USERNAME: ${{ secrets.UAT_USERNAME }}
+  CONSUMER_KEY: ${{ secrets.UAT_CONSUMER_KEY }}
+  SERVER_KEY: ${{ secrets.UAT_SERVER_KEY }}
 
 jobs:
   deploy-delta:
@@ -23,10 +23,10 @@ jobs:
         run: |
           npm install -g @salesforce/cli
 
-      - name: Auth to DevPro Sandbox
+      - name: Auth to UAT Sandbox
         run: |
           echo "$SERVER_KEY" | base64 -di > server.key
-          sf org login jwt --username $SF_USERNAME --client-id $CONSUMER_KEY --jwt-key-file server.key --alias devpro
+          sf org login jwt --username $SF_USERNAME --client-id $CONSUMER_KEY --jwt-key-file server.key --alias UAT
 
       - name: Download Last Deployed Commit
         uses: actions/download-artifact@v4
@@ -67,7 +67,7 @@ jobs:
         run: |
           if [ -s changed_files.txt ]; then
             echo "Deploying changed files..."
-            sf project deploy start --source-dir=$(paste -s -d, changed_files.txt) --target-org devpro --wait 15
+            sf project deploy start --source-dir=$(paste -s -d, changed_files.txt) --target-org uat --wait 15
           else
             echo "Skipping deployment: No files to deploy."
           fi
@@ -77,7 +77,7 @@ jobs:
           if [ -s test_classes.txt ]; then
             TESTS_TO_RUN=$(paste -s -d" " test_classes.txt)
             echo "Running tests: $TESTS_TO_RUN"
-            sf apex run test --test-names "$TESTS_TO_RUN" --target-org devpro --wait 15 --code-coverage
+            sf apex run test --test-names "$TESTS_TO_RUN" --target-org uat --wait 15 --code-coverage
           else
             echo "No tests specified for execution. Skipping tests."
           fi
