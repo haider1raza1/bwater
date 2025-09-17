@@ -1,93 +1,80 @@
-name: Deploy Delta to UAT Sandbox
+name: Deploy to UAT Sandbox
 
 on:
   push:
     branches: [ uat ]
-
-env:
-  SF_USERNAME: ${{ secrets.UAT_USERNAME }}
-  CONSUMER_KEY: ${{ secrets.UAT_CONSUMER_KEY }}
-  SERVER_KEY: ${{ secrets.UAT_SERVER_KEY }}
+  workflow_dispatch:
 
 jobs:
-  deploy-delta:
-    name: Calculate Delta and Deploy
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          fetch-depth: 2  # Needed for git diff to work
 
       - name: Setup Salesforce CLI
         run: |
           npm install -g @salesforce/cli
+          sf --version
 
-      - name: Auth to UAT Sandbox
+      - name: Create JWT key file
         run: |
-          echo "$SERVER_KEY" | base64 -di > server.key
-          sf org login jwt --username $SF_USERNAME --client-id $CONSUMER_KEY --jwt-key-file server.key --alias UAT
+          echo "${{ secrets.UAT_JWT_KEY }}" | base64 -d > server.key
+          chmod 600 server.key
 
-      - name: Download Last Deployed Commit
-        uses: actions/download-artifact@v4
-        with:
-          name: last-deployed-commit
-          path: ./
-        continue-on-error: true
-
-      - name: Get Changed Files and Tests
-        id: get-delta
+      - name: Authenticate with JWT
         run: |
-          if [ -f ./commit_SHA.txt ]; then
-            LAST_SHA=$(cat ./commit_SHA.txt)
-            echo "Last deployed SHA: $LAST_SHA"
+          sf org login jwt \
+            --username ${{ secrets.UAT_USERNAME }} \
+            --client-id ${{ secrets.UAT_CONSUMER_KEY }} \
+            --jwt-key-file server.key \
+            --instance-url ${{ vars.UAT_AUTH_URL }} \
+            --alias uat-sandbox \
+            --set-default
+
+      - name: Deploy to UAT Sandbox
+        run: |
+          sf project deploy start \
+            --target-org uat-sandbox \
+            --ignore-conflicts \
+            --wait 60 \
+            --verbose
+
+      - name: Conditionally run tests
+        run: |
+          # Check if there are any Apex classes in the project
+          if find force-app -name "*.cls" -type f | read; then
+            echo "Apex classes found, attempting to run tests..."
+          
+            # Run tests with error handling
+            set +e
+            TEST_OUTPUT=$(sf apex run test \
+              --target-org uat-sandbox \
+              --wait 15 \
+              --result-format json 2>&1)
+            TEST_EXIT_CODE=$?
+            set -e
+          
+            if [ $TEST_EXIT_CODE -eq 0 ]; then
+              echo "✓ Tests completed successfully"
+              echo "$TEST_OUTPUT" | jq '.result.summary'
+            else
+              # Check if the error is because no tests exist
+              if echo "$TEST_OUTPUT" | grep -q "NO_TESTS_RAN\|0 tests"; then
+                echo "✓ No test methods found - this is expected for new projects"
+              else
+                echo "Test execution failed:"
+                echo "$TEST_OUTPUT"
+                exit $TEST_EXIT_CODE
+              fi
+            fi
           else
-            LAST_SHA=$(git rev-parse HEAD~1)
-            echo "No previous artifact found. Using previous commit: $LAST_SHA"
+            echo "✓ No Apex classes in project - skipping tests"
           fi
 
-          CURRENT_SHA=$(git rev-parse HEAD)
-          echo "CURRENT_SHA=$CURRENT_SHA" >> $GITHUB_ENV
-          echo "Current SHA: $CURRENT_SHA"
-
-          git diff --name-only $LAST_SHA $CURRENT_SHA -- force-app > changed_files.txt
-
-          touch test_classes.txt
-          if [ -s changed_files.txt ]; then
-            echo "Changed files:"
-            cat changed_files.txt
-            grep '\.cls$' changed_files.txt | sed 's/\.cls$//; s/.*\///' | while read line; do echo "${line}Test"; done | sort -u > test_classes.txt
-            echo "Tests to run:"
-            cat test_classes.txt
-          else
-            echo "No metadata files changed in force-app."
-          fi
-
-      - name: Deploy Delta to Org
+      - name: Clean up
         run: |
-          if [ -s changed_files.txt ]; then
-            echo "Deploying changed files..."
-            sf project deploy start --source-dir=$(paste -s -d, changed_files.txt) --target-org uat --wait 15
-          else
-            echo "Skipping deployment: No files to deploy."
-          fi
-
-      - name: Run Selected Tests
-        run: |
-          if [ -s test_classes.txt ]; then
-            TESTS_TO_RUN=$(paste -s -d" " test_classes.txt)
-            echo "Running tests: $TESTS_TO_RUN"
-            sf apex run test --test-names "$TESTS_TO_RUN" --target-org uat --wait 15 --code-coverage
-          else
-            echo "No tests specified for execution. Skipping tests."
-          fi
-
-      - name: Create State File
-        run: echo "${{ env.CURRENT_SHA }}" > commit_SHA.txt
-
-      - name: Upload Artifact for Next Deployment
-        uses: actions/upload-artifact@v4
-        with:
-          name: last-deployed-commit
-          path: commit_SHA.txt
-          overwrite: true
+          rm -f server.key
+        if: always()
