@@ -34,7 +34,7 @@ jobs:
             --alias staging-sandbox \
             --set-default
 
-      - name: Deploy to sTAGING Sandbox
+      - name: Deploy to Staging Sandbox
         run: |
           sf project deploy start \
             --target-org staging-sandbox \
