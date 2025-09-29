@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customValue>
+        <fullName>Commercial</fullName>
+        <default>false</default>
+        <label>Commercial</label>
+    </customValue>
+    <customValue>
+        <fullName>Councils</fullName>
+        <default>false</default>
+        <label>Councils</label>
+    </customValue>
+    <customValue>
+        <fullName>Health</fullName>
+        <default>false</default>
+        <label>Health</label>
+    </customValue>
+    <customValue>
+        <fullName>Water Authority</fullName>
+        <default>false</default>
+        <label>Water Authority</label>
+    </customValue>
+    <masterLabel>Market Segment</masterLabel>
+    <sorted>false</sorted>
+</GlobalValueSet>

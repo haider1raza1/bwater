@@ -38,6 +38,7 @@
     </actionOverrides>
     <brand>
         <headerColor>#0070D2</headerColor>
+        <logo>BarwonAssetSolutionsBW_RGB</logo>
         <logoVersion>1</logoVersion>
         <shouldOverrideOrgTheme>false</shouldOverrideOrgTheme>
     </brand>
@@ -56,7 +57,8 @@
     <tabs>standard-Account</tabs>
     <tabs>standard-Contact</tabs>
     <tabs>standard-Opportunity</tabs>
-    <tabs>standard-Event</tabs>
+    <tabs>standard-Contract</tabs>
+    <tabs>standard-Order</tabs>
     <tabs>standard-Forecasting3</tabs>
     <tabs>standard-Dashboard</tabs>
     <tabs>standard-report</tabs>
