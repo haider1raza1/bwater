@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customValue>
+        <fullName>Colac Otway</fullName>
+        <default>false</default>
+        <label>Colac Otway</label>
+    </customValue>
+    <customValue>
+        <fullName>G21 Geelong</fullName>
+        <default>false</default>
+        <label>G21 Geelong</label>
+    </customValue>
+    <customValue>
+        <fullName>G21 Golden Plains</fullName>
+        <default>false</default>
+        <label>G21 Golden Plains</label>
+    </customValue>
+    <customValue>
+        <fullName>G21 Surf Coast</fullName>
+        <default>false</default>
+        <label>G21 Surf Coast</label>
+    </customValue>
+    <customValue>
+        <fullName>Regional Vic</fullName>
+        <default>false</default>
+        <label>Regional Vic</label>
+    </customValue>
+    <masterLabel>Region</masterLabel>
+    <sorted>false</sorted>
+</GlobalValueSet>
