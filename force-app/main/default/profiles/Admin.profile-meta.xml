@@ -3310,10 +3310,6 @@
         <visibility>DefaultOff</visibility>
     </tabVisibilities>
     <tabVisibilities>
-        <tab>standard-PricebookEntry</tab>
-        <visibility>DefaultOn</visibility>
-    </tabVisibilities>
-    <tabVisibilities>
         <tab>standard-ProcessException</tab>
         <visibility>DefaultOn</visibility>
     </tabVisibilities>
