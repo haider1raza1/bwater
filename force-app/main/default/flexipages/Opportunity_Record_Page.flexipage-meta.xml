@@ -153,6 +153,12 @@
                 </visibilityRule>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldItem>Record.Work_Type__c</fieldItem>
+                <identifier>RecordWork_Type__cField</identifier>
+            </fieldInstance>
+        </itemInstances>
         <name>Facet-ee14f04a-777b-4554-94ab-7ee1ad1e061d</name>
         <type>Facet</type>
     </flexiPageRegions>
