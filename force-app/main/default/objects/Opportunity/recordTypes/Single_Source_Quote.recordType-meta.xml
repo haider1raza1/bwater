@@ -108,4 +108,27 @@
             <default>false</default>
         </values>
     </picklistValues>
+    <picklistValues>
+        <picklist>Work_Type__c</picklist>
+        <values>
+            <fullName>Civil</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Electrical</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Land</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Mechanical</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Projects</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
 </RecordType>
