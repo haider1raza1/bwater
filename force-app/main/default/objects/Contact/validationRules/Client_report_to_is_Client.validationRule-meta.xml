@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Client_report_to_is_Client</fullName>
+    <active>true</active>
+    <errorConditionFormula>RecordType.DeveloperName = &apos;Clients&apos; &amp;&amp; ReportsTo.RecordType.DeveloperName &lt;&gt; &apos;Clients&apos; &amp;&amp;
+NOT(ISBLANK(ReportsToId))</errorConditionFormula>
+    <errorDisplayField>ReportsToId</errorDisplayField>
+    <errorMessage>Only contact of type clients can be selected</errorMessage>
+</ValidationRule>

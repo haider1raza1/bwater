@@ -4,14 +4,14 @@
     <objectMapping>
         <inputObject>Lead</inputObject>
         <mappingFields>
-            <inputField>Est_Start_Date__c</inputField>
-            <outputField>Est_Start_Date__c</outputField>
+            <inputField>Market_Segment_and_Region__c</inputField>
+            <outputField>Market_Segment__c</outputField>
         </mappingFields>
         <mappingFields>
-            <inputField>Est_Revenue__c</inputField>
-            <outputField>Est_Revenue__c</outputField>
+            <inputField>Region__c</inputField>
+            <outputField>Region__c</outputField>
         </mappingFields>
-        <outputObject>Opportunity</outputObject>
+        <outputObject>Account</outputObject>
     </objectMapping>
     <opportunityCreationOptions>VisibleOptional</opportunityCreationOptions>
 </LeadConvertSettings>
