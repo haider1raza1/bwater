@@ -38,14 +38,6 @@
                 <behavior>Edit</behavior>
                 <field>Loss_Reason__c</field>
             </layoutItems>
-            <layoutItems>
-                <behavior>Edit</behavior>
-                <field>Est_Revenue__c</field>
-            </layoutItems>
-            <layoutItems>
-                <behavior>Edit</behavior>
-                <field>Est_Start_Date__c</field>
-            </layoutItems>
         </layoutColumns>
         <layoutColumns>
             <layoutItems>
@@ -300,6 +292,10 @@
         <fields>EVENT.LOCATION</fields>
         <fields>CORE.USERS.FULL_NAME</fields>
         <relatedList>RelatedHistoryList</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <fields>NAME</fields>
+        <relatedList>Opportunity_Employee__c.Opportunity__c</relatedList>
     </relatedLists>
     <relatedObjects>AccountId</relatedObjects>
     <showEmailCheckbox>false</showEmailCheckbox>
