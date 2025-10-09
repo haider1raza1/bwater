@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>64.0</apiVersion>
+    <assignments>
+        <name>Assignment_Contract_Administrator</name>
+        <label>Assignment Contract Administrator</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>varContract.Id</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.Contract__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varContract.Contract_Administrator__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue></stringValue>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <assignments>
+        <name>Assignment_Contract_Manager</name>
+        <label>Assignment Contract Manager</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>varContract.Id</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.Contract__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varContract.Contract_Manager__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue></stringValue>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <assignments>
+        <name>Assignment_Contract_Owner</name>
+        <label>Assignment Contract Owner</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>varContract.Id</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.Contract__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varContract.Contract_Owner__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue></stringValue>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <decisions>
+        <name>Entry_criteria</name>
+        <label>Entry criteria</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Is_Contract_Owner</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Role__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Contract Owner</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assignment_Contract_Owner</targetReference>
+            </connector>
+            <label>Is Contract Owner</label>
+        </rules>
+        <rules>
+            <name>Is_Contract_Manager</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Role__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Contract Manager</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assignment_Contract_Manager</targetReference>
+            </connector>
+            <label>Is Contract Manager</label>
+        </rules>
+        <rules>
+            <name>Is_Contract_Administrator</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Role__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Contract Administrator</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assignment_Contract_Administrator</targetReference>
+            </connector>
+            <label>Is Contract Administrator</label>
+        </rules>
+    </decisions>
+    <environments>Default</environments>
+    <interviewLabel>Contract Employee before delete {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Contract Employee before delete</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Entry_criteria</targetReference>
+        </connector>
+        <object>Contract_Employee__c</object>
+        <recordTriggerType>Delete</recordTriggerType>
+        <triggerType>RecordBeforeDelete</triggerType>
+    </start>
+    <status>Active</status>
+    <variables>
+        <name>varContract</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Contract</objectType>
+    </variables>
+</Flow>

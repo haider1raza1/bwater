@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Contract_KPI_Details__c</fullName>
+    <inlineHelpText>Delete before use Please include details of contract KPI’s required to be delivered and/or reported against, include both internal and external requirements</inlineHelpText>
+    <label>Contract KPI Details</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>TextArea</type>
+</CustomField>
