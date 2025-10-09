@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customValue>
+        <fullName>Account Manager</fullName>
+        <default>false</default>
+        <label>Account Manager</label>
+    </customValue>
+    <customValue>
+        <fullName>Channel Manager</fullName>
+        <default>false</default>
+        <label>Channel Manager</label>
+    </customValue>
+    <customValue>
+        <fullName>Field Sales Rep</fullName>
+        <default>false</default>
+        <label>Field Sales Rep</label>
+    </customValue>
+    <customValue>
+        <fullName>Inside Sales Rep</fullName>
+        <default>false</default>
+        <label>Inside Sales Rep</label>
+    </customValue>
+    <customValue>
+        <fullName>Owner</fullName>
+        <default>false</default>
+        <label>Owner</label>
+    </customValue>
+    <customValue>
+        <fullName>Primary Sales Rep</fullName>
+        <default>false</default>
+        <label>Primary Sales Rep</label>
+    </customValue>
+    <customValue>
+        <fullName>Sales Development Rep</fullName>
+        <default>false</default>
+        <label>Sales Development Rep</label>
+    </customValue>
+    <customValue>
+        <fullName>Sales Director</fullName>
+        <default>false</default>
+        <label>Sales Director</label>
+    </customValue>
+    <customValue>
+        <fullName>VP of Sales</fullName>
+        <default>false</default>
+        <label>VP of Sales</label>
+    </customValue>
+    <masterLabel>Opportunity contact role</masterLabel>
+    <sorted>false</sorted>
+</GlobalValueSet>

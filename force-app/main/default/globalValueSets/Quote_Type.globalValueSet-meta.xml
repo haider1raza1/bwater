@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customValue>
+        <fullName>Single Source Quote</fullName>
+        <default>false</default>
+        <label>Single Source Quote</label>
+    </customValue>
+    <customValue>
+        <fullName>Tender</fullName>
+        <default>false</default>
+        <label>Tender</label>
+    </customValue>
+    <masterLabel>Quote Type</masterLabel>
+    <sorted>false</sorted>
+</GlobalValueSet>
