@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Formatize_Form_Setup__c</fullName>
+    <defaultValue>false</defaultValue>
+    <inlineHelpText>If yes, please direct to Contract Administrator for set up</inlineHelpText>
+    <label>Formatize Form Setup</label>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>
