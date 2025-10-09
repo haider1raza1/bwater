@@ -75,17 +75,17 @@
         </values>
     </picklistValues>
     <picklistValues>
-        <picklist>Loss_Reason__c</picklist>
+        <picklist>Lost_Reason__c</picklist>
         <values>
-            <fullName>Lost to Competitor</fullName>
+            <fullName>Competitor</fullName>
             <default>false</default>
         </values>
         <values>
-            <fullName>No Budget %2F Lost Funding</fullName>
+            <fullName>Existing Provider</fullName>
             <default>false</default>
         </values>
         <values>
-            <fullName>No Decision %2F Non-Responsive</fullName>
+            <fullName>Experience</fullName>
             <default>false</default>
         </values>
         <values>
@@ -94,6 +94,17 @@
         </values>
         <values>
             <fullName>Price</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Quote_Type__c</picklist>
+        <values>
+            <fullName>Single Source Quote</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Tender</fullName>
             <default>false</default>
         </values>
     </picklistValues>
@@ -111,7 +122,11 @@
     <picklistValues>
         <picklist>Work_Type__c</picklist>
         <values>
-            <fullName>Civil</fullName>
+            <fullName>Civil Works</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Contact Centre</fullName>
             <default>false</default>
         </values>
         <values>
@@ -119,7 +134,7 @@
             <default>false</default>
         </values>
         <values>
-            <fullName>Land</fullName>
+            <fullName>Land Management</fullName>
             <default>false</default>
         </values>
         <values>
@@ -127,7 +142,11 @@
             <default>false</default>
         </values>
         <values>
-            <fullName>Projects</fullName>
+            <fullName>New Initiatives</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Project Delivery</fullName>
             <default>false</default>
         </values>
     </picklistValues>

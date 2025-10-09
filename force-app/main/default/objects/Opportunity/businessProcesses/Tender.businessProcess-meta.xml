@@ -3,6 +3,10 @@
     <fullName>Tender</fullName>
     <isActive>true</isActive>
     <values>
+        <fullName>Clarification</fullName>
+        <default>false</default>
+    </values>
+    <values>
         <fullName>Closed Lost</fullName>
         <default>false</default>
     </values>
@@ -11,19 +15,19 @@
         <default>false</default>
     </values>
     <values>
-        <fullName>Needs Analysis</fullName>
+        <fullName>Contract Awarded</fullName>
         <default>false</default>
     </values>
     <values>
-        <fullName>Negotiation</fullName>
+        <fullName>Price Review</fullName>
         <default>false</default>
     </values>
     <values>
-        <fullName>Proposal</fullName>
+        <fullName>Submitted</fullName>
         <default>false</default>
     </values>
     <values>
-        <fullName>Qualification</fullName>
+        <fullName>Tender Writing</fullName>
         <default>false</default>
     </values>
 </BusinessProcess>

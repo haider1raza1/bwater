@@ -5,7 +5,7 @@
     <fieldName>StageName</fieldName>
     <masterLabel>Tender</masterLabel>
     <pathAssistantSteps>
-        <fieldNames>Loss_Reason__c</fieldNames>
+        <fieldNames>Lost_Reason__c</fieldNames>
         <picklistValueName>Closed Lost</picklistValueName>
     </pathAssistantSteps>
     <pathAssistantSteps>

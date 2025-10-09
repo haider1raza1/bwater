@@ -11,9 +11,14 @@
         <label>Contract Manager</label>
     </customValue>
     <customValue>
-        <fullName>Owner</fullName>
+        <fullName>Contract Owner</fullName>
         <default>false</default>
-        <label>Owner</label>
+        <label>Contract Owner</label>
+    </customValue>
+    <customValue>
+        <fullName>Contact for Invoicing</fullName>
+        <default>false</default>
+        <label>Contact for Invoicing</label>
     </customValue>
     <masterLabel>Contract employee role</masterLabel>
     <sorted>false</sorted>
