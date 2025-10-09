@@ -2219,9 +2219,6 @@
         <layout>Contract_Employee__c-Contract Employee Layout</layout>
     </layoutAssignments>
     <layoutAssignments>
-        <layout>CspTrustedSite-Trusted URL Layout</layout>
-    </layoutAssignments>
-    <layoutAssignments>
         <layout>DuplicateRecordSet-Duplicate Record Set Layout</layout>
     </layoutAssignments>
     <layoutAssignments>
