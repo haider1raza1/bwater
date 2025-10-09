@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Methodology_Details__c</fullName>
+    <inlineHelpText>Delete before use Please include a detailed methodology that was priced, including Vehicles, equipment, personnel, productivity/work requirements, set timeframes, subcontractor’s</inlineHelpText>
+    <label>Methodology Details</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>TextArea</type>
+</CustomField>
