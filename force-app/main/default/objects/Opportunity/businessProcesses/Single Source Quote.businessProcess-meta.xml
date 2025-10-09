@@ -11,7 +11,11 @@
         <default>false</default>
     </values>
     <values>
-        <fullName>Qualification</fullName>
+        <fullName>Quoting</fullName>
+        <default>false</default>
+    </values>
+    <values>
+        <fullName>RFQ Support</fullName>
         <default>false</default>
     </values>
 </BusinessProcess>

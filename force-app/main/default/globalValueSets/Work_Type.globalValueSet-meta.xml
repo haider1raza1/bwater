@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
     <customValue>
-        <fullName>Civil</fullName>
+        <fullName>Civil Works</fullName>
         <default>false</default>
-        <label>Civil</label>
+        <label>Civil Works</label>
+    </customValue>
+    <customValue>
+        <fullName>Contact Centre</fullName>
+        <default>false</default>
+        <label>Contact Centre</label>
     </customValue>
     <customValue>
         <fullName>Electrical</fullName>
@@ -11,9 +16,9 @@
         <label>Electrical</label>
     </customValue>
     <customValue>
-        <fullName>Land</fullName>
+        <fullName>Land Management</fullName>
         <default>false</default>
-        <label>Land</label>
+        <label>Land Management</label>
     </customValue>
     <customValue>
         <fullName>Mechanical</fullName>
@@ -21,9 +26,14 @@
         <label>Mechanical</label>
     </customValue>
     <customValue>
-        <fullName>Projects</fullName>
+        <fullName>New Initiatives</fullName>
         <default>false</default>
-        <label>Projects</label>
+        <label>New Initiatives</label>
+    </customValue>
+    <customValue>
+        <fullName>Project Delivery</fullName>
+        <default>false</default>
+        <label>Project Delivery</label>
     </customValue>
     <masterLabel>Work Type</masterLabel>
     <sorted>false</sorted>
