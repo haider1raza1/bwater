@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Client_Contact_for_Invoicing__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <label>Client Contact for Invoicing</label>
+    <lookupFilter>
+        <active>true</active>
+        <errorMessage>Only contacts from the same account are allowed</errorMessage>
+        <filterItems>
+            <field>$Source.AccountId</field>
+            <operation>equals</operation>
+            <valueField>Contact.AccountId</valueField>
+        </filterItems>
+        <isOptional>false</isOptional>
+    </lookupFilter>
+    <referenceTo>Contact</referenceTo>
+    <relationshipLabel>Contracts (Client Contact for Invoicing)</relationshipLabel>
+    <relationshipName>Client_Contact_for_Invoicing</relationshipName>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Lookup</type>
+</CustomField>
