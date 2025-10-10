@@ -1,0 +1,80 @@
+name: Deploy to UAT Sandbox
+
+on:
+  push:
+    branches: [ uat ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2  # Needed for git diff to work
+
+      - name: Setup Salesforce CLI
+        run: |
+          npm install -g @salesforce/cli
+          sf --version
+
+      - name: Create JWT key file
+        run: |
+          echo "${{ secrets.UAT_JWT_KEY }}" | base64 -d > server.key
+          chmod 600 server.key
+
+      - name: Authenticate with JWT
+        run: |
+          sf org login jwt \
+            --username ${{ secrets.UAT_USERNAME }} \
+            --client-id ${{ secrets.UAT_CONSUMER_KEY }} \
+            --jwt-key-file server.key \
+            --instance-url ${{ vars.UAT_AUTH_URL }} \
+            --alias uat-sandbox \
+            --set-default
+
+      - name: Deploy to UAT Sandbox
+        run: |
+          sf project deploy start \
+            --target-org uat-sandbox \
+            --ignore-conflicts \
+            --wait 60 \
+            --verbose
+
+      - name: Conditionally run tests
+        run: |
+          # Check if there are any Apex classes in the project
+          if find force-app -name "*.cls" -type f | read; then
+            echo "Apex classes found, attempting to run tests..."
+          
+            # Run tests with error handling
+            set +e
+            TEST_OUTPUT=$(sf apex run test \
+              --target-org uat-sandbox \
+              --wait 15 \
+              --result-format json 2>&1)
+            TEST_EXIT_CODE=$?
+            set -e
+          
+            if [ $TEST_EXIT_CODE -eq 0 ]; then
+              echo "✓ Tests completed successfully"
+              echo "$TEST_OUTPUT" | jq '.result.summary'
+            else
+              # Check if the error is because no tests exist
+              if echo "$TEST_OUTPUT" | grep -q "NO_TESTS_RAN\|0 tests"; then
+                echo "✓ No test methods found - this is expected for new projects"
+              else
+                echo "Test execution failed:"
+                echo "$TEST_OUTPUT"
+                exit $TEST_EXIT_CODE
+              fi
+            fi
+          else
+            echo "✓ No Apex classes in project - skipping tests"
+          fi
+
+      - name: Clean up
+        run: |
+          rm -f server.key
+        if: always()
