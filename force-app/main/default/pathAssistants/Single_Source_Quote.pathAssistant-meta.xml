@@ -10,6 +10,7 @@
     </pathAssistantSteps>
     <pathAssistantSteps>
         <fieldNames>CloseDate</fieldNames>
+        <fieldNames>Quote_Submission_Date__c</fieldNames>
         <fieldNames>Amount</fieldNames>
         <picklistValueName>Closed Won</picklistValueName>
     </pathAssistantSteps>

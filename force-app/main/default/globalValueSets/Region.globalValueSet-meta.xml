@@ -6,6 +6,11 @@
         <label>Colac Otway</label>
     </customValue>
     <customValue>
+        <fullName>G21 Bellarine</fullName>
+        <default>false</default>
+        <label>G21 Bellarine</label>
+    </customValue>
+    <customValue>
         <fullName>G21 Geelong</fullName>
         <default>false</default>
         <label>G21 Geelong</label>
@@ -19,6 +24,16 @@
         <fullName>G21 Surf Coast</fullName>
         <default>false</default>
         <label>G21 Surf Coast</label>
+    </customValue>
+    <customValue>
+        <fullName>Interstate</fullName>
+        <default>false</default>
+        <label>Interstate</label>
+    </customValue>
+    <customValue>
+        <fullName>Metro</fullName>
+        <default>false</default>
+        <label>Metro</label>
     </customValue>
     <customValue>
         <fullName>Regional Vic</fullName>

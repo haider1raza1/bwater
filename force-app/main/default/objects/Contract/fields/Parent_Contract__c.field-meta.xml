@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Parent_Contract__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <label>Parent Contract</label>
+    <lookupFilter>
+        <active>true</active>
+        <errorMessage>Only active contracts are allowed.</errorMessage>
+        <filterItems>
+            <field>Contract.Status</field>
+            <operation>equals</operation>
+            <value>Activated</value>
+        </filterItems>
+        <isOptional>false</isOptional>
+    </lookupFilter>
+    <referenceTo>Contract</referenceTo>
+    <relationshipLabel>Parent Contract</relationshipLabel>
+    <relationshipName>ChildContract</relationshipName>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Lookup</type>
+</CustomField>
