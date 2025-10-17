@@ -761,10 +761,8 @@
     <tabs>standard-Opportunity</tabs>
     <tabs>standard-Contract</tabs>
     <tabs>standard-Order</tabs>
-    <tabs>standard-Quote</tabs>
-    <tabs>standard-Forecasting3</tabs>
-    <tabs>standard-Dashboard</tabs>
     <tabs>standard-report</tabs>
+    <tabs>standard-Dashboard</tabs>
     <uiType>Lightning</uiType>
     <utilityBar>LightningSales_UtilityBar</utilityBar>
 </CustomApplication>
