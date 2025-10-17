@@ -63,9 +63,6 @@
                         <valueListItems>
                             <value>Activate</value>
                         </valueListItems>
-                        <valueListItems>
-                            <value>CustomButton.Contract.Generate_Handover_PDF</value>
-                        </valueListItems>
                     </valueList>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
